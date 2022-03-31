@@ -15,7 +15,11 @@ const {
   uploadimage,
   findbyID,
   updateUser,
-  passwordReset
+  passwordReset,
+  updatefull,
+  verifGoogle,
+  registerGoogle,
+  findbyEmail
 } = require("../controllers/auth");
 //routes
 router.route("/register").post(register);
@@ -29,6 +33,10 @@ router.route("/uploadimage").post(upload,uploadimage);
 router.post("/uploadImage",upload,uploadimage);
 
 router.route("/findbyid").post(findbyID);
-router.route("/updateUser").post(updateUser);
+router.post("/updateUser",upload,updateUser);
 router.route("/resetpassword").post(passwordReset);
+router.post("/updatefull",upload,updatefull);
+router.post("/verifGoogle",verifGoogle);
+router.route("/registerGoogle").post(registerGoogle);
+router.route("/findbyemail").post(findbyEmail);
 module.exports = router;

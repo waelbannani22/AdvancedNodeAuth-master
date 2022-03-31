@@ -19,6 +19,12 @@ const adminSchema = new mongoose.Schema({
         
         required: true
     }
+    ,
+    email: {
+        type: String,
+        
+        required: true
+    }
 }, {
     timestamps: true
 });

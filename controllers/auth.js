@@ -44,7 +44,7 @@ exports.login = async (req, res, next) => {
 
 // @desc    Register user
 exports.register = async (req, res, next) => {
-  const { firstname, lastname, email, password, phone,role } = req.body;
+  const { firstname, lastname, email, password, phone, role,image } = req.body;
   const verified = false
   try {
     const user1 = await User.findOne({ email });
@@ -59,7 +59,9 @@ exports.register = async (req, res, next) => {
       password,
       phone,
       role,
-      verified
+      verified,
+      status: "pending",
+      image
     });
     console.log("success")
     sendToken(user, 200, res);
@@ -117,6 +119,7 @@ exports.findbyID = async (req, res, next) => {
 //update user 
 exports.updateUser = async (req, res, next) => {
   const { id, password, phone, firstname, lastname } = req.body;
+  const image = req.file.path
   try {
     const user = await User.findOne({ _id: id });
 
@@ -129,7 +132,7 @@ exports.updateUser = async (req, res, next) => {
     user.firstname = firstname;
     user.lastname = lastname;
     user.phone = phone;
-
+    user.image =  image;
     await user.save();
 
     res.status(201).json({
@@ -142,6 +145,25 @@ exports.updateUser = async (req, res, next) => {
     next(error);
   }
 }
+//test update
+exports.updatefull = async (req, res, next) => {
+  var id = req.body.id
+  var profilePic = req.file.path
+  User.findById(id, function (err, data) {
+    data.profileImage = profilePic 
+    data.save()
+      .then(doc => {
+        res.satatus(201).json({
+          message: "profile image updated",
+          result: doc
+        });
+      }
+      )
+      .catch(err => {
+        res.status(404).json(err)
+      })
+  });
+};
 //random code
 function makeid(length) {
   var result = '';
@@ -237,17 +259,17 @@ exports.resetPassword = async (req, res, next) => {
 exports.passwordReset = async (req, res, next) => {
   try {
 
-    const {  pass ,email ,password} = req.body;
-    
+    const { pass, email, password } = req.body;
+
 
     const user = await User.findOne({ email: email });
     if (!user) return next(new ErrorResponse("no user found", 401));
 
     //
-    
-    
+
+
     user.password = password
-     console.log(user.password)
+    console.log(user.password)
     await user.save();
 
 
@@ -262,3 +284,78 @@ const sendToken = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
   res.status(statusCode).json({ sucess: true, token });
 };
+
+
+// verif googlesign-in
+exports.verifGoogle = async (req, res, next) => {
+ 
+const {email} = req.body;
+  try {
+    const user = await User.findOne({
+      email
+    });
+
+    if (user) {
+     return  res.status(201).json({
+        success: true,
+        data: user,
+       
+      });
+    }
+
+    
+
+    return  res.status(201).json({
+      success: false,
+      data: user,
+     
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.registerGoogle = async (req, res, next) => {
+  const { firstname, lastname, email, password, phone, role,image } = req.body;
+  const verified = false
+  try {
+    
+
+    
+    const user = await User.create({
+      firstname,
+      lastname,
+      email,
+      password:"user12345",
+      phone:"none",
+      role,
+      verified,
+      status: "pending",
+      image
+    });
+    console.log("success")
+    return  res.status(201).json({
+      success: true,
+      data: user,
+     
+    });
+  } catch (err) {
+    console.log("failure")
+    next(err);
+  }
+};
+exports.findbyEmail = async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return next(new ErrorResponse("no user found", 401));
+    }
+    res.status(200).json({ success: true, data: user });
+
+  } catch (error) {
+    next(error);
+  }
+
+
+}

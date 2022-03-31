@@ -10,8 +10,11 @@ const {
     register,
     FetchTeacher,
     acceptTeacher,
-    refuseTeacher
-    
+    refuseTeacher,
+    FetchStatReel,
+    FetchStudent,
+    FetchStudentInXClass,
+    banStudent
   } = require("../controllers/adminauth");
   
   const {
@@ -25,5 +28,8 @@ const {
   router.route("/acceptTeacher").post(acceptTeacher);
   router.route("/refuseTeacher").post(refuseTeacher);
   router.route("/fetchChart").get(fetchChart);
-  
+  router.route("/fetchStat").get(FetchStatReel);
+  router.route("/fetchStudent").get(FetchStudent);
+  router.route("/fetchStudentsInX").post(FetchStudentInXClass);
+  router.route("/banStudent").post(banStudent);
   module.exports = router;

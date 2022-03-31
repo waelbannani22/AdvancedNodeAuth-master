@@ -12,13 +12,16 @@ const app = express();
 app.use(express.json())
 
 exports.assignStudentToClass = async (req, res, next) => {
-    const {idClasse,idUser} = req.body;
+    const {idClasse,listId} = req.body;
     var x = 0; 
-    try {
+    var i=0;
+   // var listId = ["6223f4d80a0e35491c0f2dd4"]
+    listId.forEach( async element =>   {
+      try {
      
       const student = await User.find({
         
-        _id : idUser,
+        _id : element,
         
       });
       //console.log(student)
@@ -29,8 +32,8 @@ exports.assignStudentToClass = async (req, res, next) => {
         
       });
       console.log(classes)
-      var x =classes
-      console.log(x.length);
+      var x =classes.length
+     // console.log(x.length);
     
       if (x== 0)
       {
@@ -45,19 +48,22 @@ exports.assignStudentToClass = async (req, res, next) => {
         }else{
             clas.members.push(student)
         }
-        
+        console.log(student[i]._id)
+        const us =  await User.find({_id : student[i]._id})
+        console.log(us)
+        User.findOneAndUpdate({_id :student[i]._id}, {status : "affected"}).exec();
         await clas.save();
-        
+        i++
         console.log("success")
         res.status(200).json({
           success: true,
-          data: clas,
+          data: "added to this class",
         });
       }
       else if (x!=0)
       {
-        return next(new ErrorResponse("user already added to this class", 401));
-
+        return next(new ErrorResponse(student[i].firstname+" already added to this class", 401));
+        i++
       }
    
     
@@ -68,6 +74,8 @@ exports.assignStudentToClass = async (req, res, next) => {
       console.log("failure")
       next(err);
     }
+    });
+    
   };
   exports.createClass = async (req, res, next) => {
     const {className} = req.body;
