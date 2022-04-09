@@ -318,3 +318,22 @@ exports.banStudent = async (req, res, next) => {
     next(err);
   }
 };
+exports.FetchTeachersocket = async (req, res, next) => {
+
+  try {
+
+    const teachers = await User.find({
+
+      role: "teacher",
+      
+    });
+    console.log("success")
+    res.status(200).json({
+      success: true,
+      data: teachers,
+    });
+  } catch (err) {
+    console.log("failure")
+    next(err);
+  }
+};

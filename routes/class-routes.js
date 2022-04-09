@@ -8,12 +8,18 @@ app.use(express.json())
 const {
     
     createClass,
-    assignStudentToClass
+    assignStudentToClass,
+    getClasses,
+    assignTeacherToclass,
+    getClassesTeacher,
+    getTeachersInclass
   } = require("../controllers/classControlller");
   //routes
   router.route("/createclass").post(createClass);
   router.route("/assign").post(assignStudentToClass);
-  
-  
+  router.route("/getclasses").get(getClasses);
+  router.route("/assignTeacher").post(assignTeacherToclass);
+  router.route("/getclassesteacher").post(getClassesTeacher);
+  router.route("/getteacherinclass").post(getTeachersInclass);
   
   module.exports = router;

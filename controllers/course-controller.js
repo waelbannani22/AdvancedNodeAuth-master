@@ -28,13 +28,14 @@ const show = (req, res, next) => {
     })
 }
 const add = (req, res, next) => {
-    const { title , description, user } = req.body;
+    const { title , description, user ,created} = req.body;
 
     const newCourse = new Course();
     
     newCourse.title = title;
     newCourse.description = description;
     newCourse.idPhoto = req.file.path;
+    newCourse.created = created;
     newCourse.user = user;
     newCourse.save();
 

@@ -120,10 +120,12 @@ exports.findbyID = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   const { id, password, phone, firstname, lastname } = req.body;
   const image = req.file.path
+ 
   try {
     const user = await User.findOne({ _id: id });
 
     //no user 
+    
     if (!user) {
       return next(new ErrorResponse("no user found", 401));
     }
@@ -132,6 +134,7 @@ exports.updateUser = async (req, res, next) => {
     user.firstname = firstname;
     user.lastname = lastname;
     user.phone = phone;
+    
     user.image =  image;
     await user.save();
 
@@ -358,4 +361,34 @@ exports.findbyEmail = async (req, res, next) => {
   }
 
 
+}
+exports.updateUser1 = async (req, res, next) => {
+  const { id, password, phone, firstname, lastname } = req.body;
+console.log(id)
+  try {
+    const user = await User.findOne({_id:id});
+
+    //no user 
+    console.log(user)
+    if (!user) {
+      return next(new ErrorResponse("no user found", 401));
+    }
+    //user exists
+    user.password = password;
+    user.firstname = firstname;
+    user.lastname = lastname;
+    user.phone = phone;
+    
+    
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      data: user,
+      message: "user updated"
+    });
+
+  } catch (error) {
+    next(error);
+  }
 }

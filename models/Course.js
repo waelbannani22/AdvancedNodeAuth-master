@@ -6,10 +6,12 @@ const CourseSchema = new mongoose.Schema(
         description: { type: String },
         date: { type: Date },
         idPhoto: { type: String },
+        created: { type: String },
+        class: { type: String },
 user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-}
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
     },
     {
         timestamps: { currentTime: () => Date.now() },

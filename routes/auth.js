@@ -19,7 +19,8 @@ const {
   updatefull,
   verifGoogle,
   registerGoogle,
-  findbyEmail
+  findbyEmail,
+  updateUser1
 } = require("../controllers/auth");
 //routes
 router.route("/register").post(register);
@@ -39,4 +40,5 @@ router.post("/updatefull",upload,updatefull);
 router.post("/verifGoogle",verifGoogle);
 router.route("/registerGoogle").post(registerGoogle);
 router.route("/findbyemail").post(findbyEmail);
+router.route("/updateUser1").post(updateUser1)
 module.exports = router;

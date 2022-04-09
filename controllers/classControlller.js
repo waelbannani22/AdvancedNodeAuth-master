@@ -77,6 +77,7 @@ exports.assignStudentToClass = async (req, res, next) => {
     });
     
   };
+  
   exports.createClass = async (req, res, next) => {
     const {className} = req.body;
     try {
@@ -92,6 +93,142 @@ exports.assignStudentToClass = async (req, res, next) => {
         success: true,
         data: classe,
       });
+    } catch (err) {
+      console.log("failure")
+      next(err);
+    }
+  };
+  exports.getClasses = async (req, res, next) => {
+    var c = []
+    try {
+      
+      const classe = await Classe.find({
+       
+      });
+        
+      classe.forEach(el => {
+        console.log(el.className)
+        var data2 = ({
+          "id": el._id,
+          "classeName": el.className
+    
+        });
+        c.push(data2)
+      });
+      res.status(200).json({
+        success: true,
+        data: c,
+      });
+    } catch (err) {
+      console.log("failure")
+      next(err);
+    }
+  };
+  exports.assignTeacherToclass = async (req, res, next) => {
+    var {idTeacher} = req.body;
+    var {idClasse} = req.body;
+    var c = []
+    try {
+      console.log(idClasse)
+      const classe = await Classe.find({
+        _id:idClasse,
+        teachers : {$in : Array(idTeacher)}
+      });
+      
+      var x = classe.length
+      if (x ==0){
+        
+        const cla = await Classe.findOne({
+          _id:idClasse
+        }) 
+        console.log(cla)
+        if (cla.teachers.length == 0){
+          console.log("cla.teachers")
+         cla.teachers = idTeacher
+          var b = true
+        }else{
+           cla.teachers.push(idTeacher)
+           var b = false
+        }
+        
+        cla.save()
+      
+          return res.status(200).json({
+            success: b,
+            data: cla,
+          });
+    
+        
+      }else{
+         return res.status(200).json({
+            success: false,
+            data: classe,
+          });
+      }
+      
+      
+      
+    
+    } catch (err) {
+      console.log("failure")
+      next(err);
+    }
+  };
+  
+  exports.getClassesTeacher = async (req, res, next) => {
+    var {idTeacher} = req.body;
+    var c = []
+    try {
+      
+      const classe = await Classe.find({
+        teachers : {$in : Array(idTeacher)}
+      });
+        
+      classe.forEach(el => {
+        console.log(el.className)
+        var data2 = ({
+          "id": el._id,
+          "classeName": el.className,
+         
+    
+        });
+        c.push(data2)
+      });
+      res.status(200).json({
+        success: true,
+        data: c,
+      });
+    } catch (err) {
+      console.log("failure")
+      next(err);
+    }
+  };
+  exports.getTeachersInclass = async (req, res, next) => {
+   
+    var {idClasse} = req.body;
+    var c = []
+    var k = []
+    try {
+      
+      const classe = await Classe.find({
+        _id:idClasse
+      });
+        
+      classe.forEach(el => {
+        console.log(el.className)
+       
+        c.push(el.teachers)
+      });
+        c.forEach(async(l)  => {
+        const users = await User.find({
+          _id:l
+        });
+        res.status(200).json({
+          success: true,
+          data: users,
+        });
+      })
+      
     } catch (err) {
       console.log("failure")
       next(err);

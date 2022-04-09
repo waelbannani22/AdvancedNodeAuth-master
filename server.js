@@ -15,12 +15,19 @@ const rimraf = require("rimraf");
 const glob = require("glob");
 const sanitize = require("sanitize-filename");
 app.use(cors())
+
+const axios = require('axios');
+var detectLang = require('lang-detector');
 var fileupload = require('express-fileupload');
 const courRoute = require('./routes/courRoute')
 const resourceRoute = require('./routes/ressourceRoute')
 const commantaireRoute = require('./routes/commentaire')
 const workRoute = require('./routes/work')
 
+const io= require("socket.io")(2001,{
+
+})
+var name;
 mongoose.connect('mongodb+srv://allin:123@allin.wfzye.mongodb.net/allin?retryWrites=true&w=majority',
 {useNewUrlParser: true,
 useFindAndModify: false,
@@ -41,9 +48,20 @@ db.once('open', () => {
 
 app.use(express.json());
 
+io.on('connection',socket=>{
+  console.log("connected");
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+  socket.on("send-message",newValue=> {
+    socket.broadcast.emit("receive-message",newValue)
+  })
+  });
+
+  
 app.get("/", (req, res) => {
   const dirPath = base64.decode(req.query.path) || "";
-console.log("dirpath",dirPath)
+  console.log("dirpath",dirPath)
   fs.readdir(dirPath, (err, files) => {
     if (!files) {
       console.log("No Files");
@@ -79,8 +97,10 @@ console.log("dirpath",dirPath)
         return res.json({});
       }
     });
+    
 
     return res.json(finalList);
+
   });
 });
 
@@ -180,121 +200,292 @@ app.post("/write",(req,res)=>{
       })
   }); 
 });
-
-app.post("/compile",(req,res)=>{
-  var request = require('request');
-  
-
-var accessToken = '4fad68c2a3f132443b2ea20a4093dc30';
-var endpoint = 'cf883bdc.compilers.sphere-engine.com';
-// define request parameters
-var submissionData = {
-  problemId: 42,
-  compilerId: 11,
-  source:'C:/Users/LEGION/Desktop/testreact/main.c'
-
-};
-
-// send request
-request({
-  url: 'https://' + endpoint + '/api/v4/submissions?access_token=' + accessToken,
-  method: 'POST',
-  form: submissionData
-}, function (error, response, body) {
-  
-  if (error) {
-      console.log('Connection problem');
-  }
-  
-  // process response
-  if (response) {
-      if (response.statusCode === 201) {
-          console.log(JSON.parse(response.body)); // submission data in JSON
-      } else {
-          if (response.statusCode === 401) {
-              console.log('Invalid access token');
-          } else if (response.statusCode === 402) {
-              console.log('Unable to create submission');
-          } else if (response.statusCode === 400) {
-              var body = JSON.parse(response.body);
-              console.log('Error code: ' + body.error_code + ', details available in the message: ' + body.message)
-          }
-      }
-  }
-});
+app.post ("/stdin",(req,res)=>{
+ var  log=req.body;
+  console.log(log.data)
+  stdinval = log.data;
 })
-app.get("/test",(req,res)=>{
-  var request = require('request');
 
-var accessToken = '4fad68c2a3f132443b2ea20a4093dc30';
-var endpoint = 'cf883bdc.compilers.sphere-engine.com';
-var submissionId = 337132388;
+app.post("/getname",(req,res)=>{
+  var log=req.body;
+  name = log.data
+  console.log(name)
+  res.json({
+  message:"done"
+  })
+  
+})
+app.get("/getna",(req,res)=>{
+  res.json({
+    name
+  })
+})
 
-// send request
-request({
-    url: 'https://' + endpoint + '/api/v4/submissions/' + submissionId + '?access_token=' + accessToken,
-    method: 'GET'
-}, function (error, response, body) {
-    
-    if (error) {
-        console.log('Connection problem');
-    }
-    
-    // process response
-    if (response) {
-        if (response.statusCode === 200) {
-            console.log(JSON.parse(response.body)); // submission data in JSON
-        } else {
-            if (response.statusCode === 401) {
-                console.log('Invalid access token');
-            } else if (response.statusCode === 403) {
-                console.log('Access denied');
-            } else if (response.statusCode === 404) {
-                console.log('Submision not found');
-            }
+app.get("/folder",(req,res)=>{
+  var datacomp=""
+  var languageC;
+  var y="";
+  const directoryPath = "C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/"+name;
+fs.readdir(directoryPath, function (err, files) {
+    if (err) {
+        return console.log('Unable to scan directory: ' + err);
+    } 
+    files.forEach(function (file) {
+      var filename=file
+      fs.readFile("C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/"+name+"/"+file, 'utf8' , (err, data) => {
+        filename = filename.split('.')[0]
+
+        if (err) {
+          console.error(err)
+          return
+
+
         }
-    }
-});
+languageC=detectLang(data)
+if (languageC == "Python")
 
-})
-app.get("/listcomp",(req,res)=>{
-  var request = require('request');
+   {
+     y="python3";
+   }
+   if (languageC =="C++")
+   {
+     y="c_cpp";
+   }
+   if (languageC == "Java")
+   {
+     y="java";
+   }
+   if (languageC == "Javascript")
 
-  var accessToken = '4fad68c2a3f132443b2ea20a4093dc30';
-  var endpoint = 'cf883bdc.compilers.sphere-engine.com';
+   {
+     y="nodejs";
+   }
+        var data = JSON.stringify({
+          "script" : data,
+        "language": y,
+        "clientId": "94c401bedab266b2b963465707a543d6",
+        "clientSecret":"26dd5c86467ff7a6feb3e8a27ff824a22ad0836c36e3ef0ef599f8471cb6718c",
+        "stdin":stdinval
+           });
+        
+        var config = {
+        method: 'post',
+        url: 'https://api.jdoodle.com/v1/execute',
+        headers: { 
+        'Content-Type': 'application/json'
+        },
+        data : data
+        };
+        
+        axios(config)
+        
+            .then(function (response) {
+              datacomp= datacomp+response.data.output ;
+              var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/compilations/'+filename+'.txt';
+                     
+                        fs.writeFile(filePath, datacomp, (err,res) => {
+                      
+                          datacomp="";
+                          
+                      });
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+          
 
-  var request = require('request');
-  
-  // send request
-  request({
-      url: 'https://' + endpoint + '/api/v4/compilers?access_token=' + accessToken,
-      method: 'GET'
-  }, function (error, response, body) {
+      })  
       
-      if (error) {
-          console.log('Connection problem');
-      }
-      // var role = sessionStorage.getItem(role)
-      // process response
-      if (response) {
-          if (response.statusCode === 200) {
-              console.log(JSON.parse(response.body)); // list of compilers in JSON
-          } else {
-              if (response.statusCode === 401) {
-                  console.log('Invalid access token');
-              }
-          }
-      }
+     });
+});
+res.json({
+  message:"done"
+})
+
+})
+app.post("/readcomp",(req,res)=>{
+
+  var log = req.body;
+  console.log("file",log.data)
+  var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/compilations/'+log.data+'.txt';
+    const buffer = fs.readFileSync(filePath);
+    const fileContent = buffer.toString();
+
+res.json({
+fileContent})
+})
+app.post("/upbackend",(req,res)=>{
+  var re=req.body
+  const directoryPath = re.data
+var foldername="";
+foldername = directoryPath.substring(directoryPath.lastIndexOf("/") + 1);
+let dir ='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/'+name;    
+console.log("dir",dir)
+if (!fs.existsSync(dir))
+{   
+    fs.mkdirSync(dir); 
+ } 
+foldername = directoryPath.substring(directoryPath.lastIndexOf("/") + 1);
+console.log(foldername)
+fs.readdir(directoryPath, function (err, files) {
+    if (err) {
+        return console.log('Unable to scan directory: ' + err);
+    } 
+    files.forEach(function (file) {
+        fs.readFile(directoryPath+"/"+file, 'utf8' , (err, data) => {
+var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/'+name+"/"+file;
+                     console.log(filePath)
+
+
+                     fs.writeFile(filePath, data, err => {
+                      if (err) {
+                        console.error(err)
+                        return
+                      }
+                    })
+
+      
+    });
   });
+});
+res.json({
+  message:"done"
+})
+})
+app.post("/changename",(req,res)=>{
+  var re=req.body
+var x =false
+  const directoryPath =re.data
+
+  var foldername="";
+foldername = directoryPath.substring(directoryPath.lastIndexOf("/") + 1);
+console.log("foldername",foldername);
+
+var path = 'C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/';   
+
+fs.readdir(path, function (err, files) {
+  if (err) {
+      return console.log('Unable to scan directory: ' + err);
+  }
+  console.log(files)
+files.forEach(el=>{
+  if (el == foldername)
+  {
+   return x = true
+  }
+
+  
+})
+return  res.json({
+   x
+    })
+     
+   
+  })
+
 })
 
 
+app.get("/filet",(req,res)=>
+{
+  var l;
+  var fil=""
+var filename=""
+  const directoryPath = "C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/compilations/";
+  fs.readdir(directoryPath, function (err, files) {
+      if (err) {
+          return console.log('Unable to scan directory: ' + err);
+      } 
+      files.forEach(function (file) {
+          fs.readFile(directoryPath+file, 'utf8' , (err, data) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+            if (data.indexOf("error")>-1)
+            {
+              filename=file
+              filename = filename.split('.')[0]
+
+fil=fil+filename+"\n";
+              console.log(fil)
+            }
+            
+                  
+
+            var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/tmp.txt';
 
 
+            fs.writeFile(filePath, fil, err => {
+             if (err) {
+               console.error(err)
+               return
+             }
+           })
+          })  
+      
+      }); 
+
+  });
+  var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/tmp.txt';
+  const buffer = fs.readFileSync(filePath);
+  const fileContent = buffer.toString();
+
+res.json({
+fileContent})
+  
+  
+});
+app.get("/filef",(req,res)=>
+{
+  var l;
+  var fil=""
+var filename=""
+  const directoryPath = "C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/compilations/";
+  fs.readdir(directoryPath, function (err, files) {
+      if (err) {
+          return console.log('Unable to scan directory: ' + err);
+      } 
+      files.forEach(function (file) {
+          fs.readFile(directoryPath+file, 'utf8' , (err, data) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+            if (data.indexOf("error")==-1)
+            {
+              filename=file
+              filename = filename.split('.')[0]
+
+fil=fil+filename+"\n";
+              console.log(fil)
+            }
+            
+                  
+
+            var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/tmp.txt';
 
 
+            fs.writeFile(filePath, fil, err => {
+             if (err) {
+               console.error(err)
+               return
+             }
+           })
+          })  
+      
+      }); 
 
+  });
+  var filePath='C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/tmp.txt';
+  const buffer = fs.readFileSync(filePath);
+  const fileContent = buffer.toString();
 
+res.json({
+fileContent})
+  
+  
+});
 
 
 
@@ -310,7 +501,7 @@ app.use("/api/", require("./routes/private"));
 app.use('/api/images', require('./routes/images.route'));
 app.use('/admin/', require('./routes/admin-routes'));
 app.use('/admin/class', require('./routes/class-routes'));
-app.use("/chatroom", require("./routes/chatroom"));
+
 app.use('/api/cour', courRoute)
 app.use('/api/resource', resourceRoute)
 app.use('/api/commantaire', commantaireRoute)
@@ -321,8 +512,9 @@ app.use(fileupload());
 app.use(errorHandler);
 //Bring in the models
 require("./models/User");
-require("./models/Chatroom");
+
 require("./models/Message");
+require("./models/ressource")
 
 const PORT = process.env.PORT || 5000;
 
@@ -335,60 +527,11 @@ process.on("unhandledRejection", (err, promise) => {
   server.close(() => process.exit(1));
 });
 
-const io = require("socket.io")(server, {
-  allowEIO3: true,
-  cors: {
-    origin: true,
-    methods: ['GET', 'POST'],
-    credentials: true
-  }
-});
+
 
 const jwt = require("jsonwebtoken");
 
 const Message = mongoose.model("Message");
 const User = mongoose.model("User");
 
-io.use(async (socket, next) => {
-  try {
-    const token = socket.handshake.query.token;
-    const payload = await jwt.verify(token, process.env.SECRET);
-    socket.userId = payload.id;
-    next();
-  } catch (err) {}
-});
 
-io.on("connection", (socket) => {
-  console.log("Connected: " + socket.userId);
-
-  socket.on("disconnect", () => {
-    console.log("Disconnected: " + socket.userId);
-  });
-
-  socket.on("joinRoom", ({ chatroomId }) => {
-    socket.join(chatroomId);
-    console.log("A user joined chatroom: " + chatroomId);
-  });
-
-  socket.on("leaveRoom", ({ chatroomId }) => {
-    socket.leave(chatroomId);
-    console.log("A user left chatroom: " + chatroomId);
-  });
-
-  socket.on("chatroomMessage", async ({ chatroomId, message }) => {
-    if (message.trim().length > 0) {
-      const user = await User.findOne({ _id: socket.userId });
-      const newMessage = new Message({
-        chatroom: chatroomId,
-        user: socket.userId,
-        message,
-      });
-      io.to(chatroomId).emit("newMessage", {
-        message,
-        name: user.name,
-        userId: socket.userId,
-      });
-      await newMessage.save();
-    }
-  });
-});
