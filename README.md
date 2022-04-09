@@ -36,3 +36,11 @@ npm run dev
 
 
 For more details follow the tutorial : https://www.youtube.com/watch?v=h6fOErvWIGI
+
+# Quick Start :
+
+ you add into it 
+ 
+ PORT=5000
+JWT_SECRET=741f35f070c7c9c35d540afa8e215a52c4bd922360f1a3415f86aa584865220114364e
+JWT_EXPIRE=10min
