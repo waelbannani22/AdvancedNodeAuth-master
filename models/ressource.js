@@ -11,8 +11,7 @@ var resourceschema = new mongoose.Schema({
                 type: String
         },
         course: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Course"
+                type:String
             }
 
 

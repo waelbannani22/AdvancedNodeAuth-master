@@ -28,6 +28,9 @@ const io= require("socket.io")(2001,{
 
 })
 var name;
+var dataT;
+var dataTT;
+var stdinval;
 mongoose.connect('mongodb+srv://allin:123@allin.wfzye.mongodb.net/allin?retryWrites=true&w=majority',
 {useNewUrlParser: true,
 useFindAndModify: false,
@@ -384,8 +387,6 @@ return  res.json({
   })
 
 })
-
-
 app.get("/filet",(req,res)=>
 {
   var l;
@@ -488,6 +489,80 @@ fileContent})
 });
 
 
+app.post("/statusT",(req,res)=>
+{
+  var x=req.body
+   dataT = x.data;
+  console.log("data",dataT)
+  res.json({
+    dataT
+  })
+})
+
+
+app.get("/statusS",(req,res)=>
+{
+
+console.log("datal",dataT)
+  res.json({
+    dataT
+  })
+})
+
+app.get("/listaw",(req,res)=>{
+  var t=[]
+  var x ="false"
+  var name="student"
+
+  t.push("student")
+  if(t.indexOf("student")>-1)
+  {
+x="true"
+  }
+res.json({
+  x
+})
+})
+
+app.post("/statusTT",(req,res)=>
+{
+  var x=req.body
+   dataTT = x.data;
+  console.log("data",dataTT)
+  res.json({
+    dataTT
+  })
+})
+
+
+app.get("/statusST",(req,res)=>
+{
+
+console.log("datal",dataTT)
+  res.json({
+    dataTT
+  })
+})
+
+app.get("/listawT",(req,res)=>{
+  var t=[]
+  var x ="false"
+  var name="student"
+
+  t.push("student")
+  if(t.indexOf("student")>-1)
+  {
+x="true"
+  }
+res.json({
+  x
+})
+})
+
+
+
+
+
 
 app.use(express.static('./public'));
 app.use('/uploads', express.static('uploads'));
@@ -501,11 +576,13 @@ app.use("/api/", require("./routes/private"));
 app.use('/api/images', require('./routes/images.route'));
 app.use('/admin/', require('./routes/admin-routes'));
 app.use('/admin/class', require('./routes/class-routes'));
+app.use('/api/notifications/', require('./routes/notifications-route'));
 
 app.use('/api/cour', courRoute)
 app.use('/api/resource', resourceRoute)
 app.use('/api/commantaire', commantaireRoute)
 app.use('/api/work', workRoute)
+
 
 app.use(fileupload());
 // Error Handler Middleware
@@ -528,10 +605,5 @@ process.on("unhandledRejection", (err, promise) => {
 });
 
 
-
-const jwt = require("jsonwebtoken");
-
-const Message = mongoose.model("Message");
-const User = mongoose.model("User");
 
 

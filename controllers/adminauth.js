@@ -267,8 +267,6 @@ exports.FetchStatReel = async (req, res, next) => {
     }else{
       return next(new ErrorResponse("no stat available", 401));
     }
-    
-  
 
   } catch (err) {
     console.log("failure")
@@ -306,20 +304,16 @@ exports.banStudent = async (req, res, next) => {
         data: classe,
       });
      }
-     
-     
-     
-    })
-    
    
-
+    })
+  
   } catch (err) {
     console.log("failure")
     next(err);
   }
 };
 exports.FetchTeachersocket = async (req, res, next) => {
-
+  var k = []
   try {
 
     const teachers = await User.find({
@@ -327,10 +321,13 @@ exports.FetchTeachersocket = async (req, res, next) => {
       role: "teacher",
       
     });
-    console.log("success")
+    console.log(teachers)
+    teachers.forEach(async el=>{
+      k.push([el._id,el.firstname+" "+el.lastname])
+    })
     res.status(200).json({
       success: true,
-      data: teachers,
+      data: k,
     });
   } catch (err) {
     console.log("failure")

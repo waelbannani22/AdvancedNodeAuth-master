@@ -12,7 +12,8 @@ const {
     getClasses,
     assignTeacherToclass,
     getClassesTeacher,
-    getTeachersInclass
+    getTeachersInclass,
+    getclass
   } = require("../controllers/classControlller");
   //routes
   router.route("/createclass").post(createClass);
@@ -21,5 +22,6 @@ const {
   router.route("/assignTeacher").post(assignTeacherToclass);
   router.route("/getclassesteacher").post(getClassesTeacher);
   router.route("/getteacherinclass").post(getTeachersInclass);
+  router.route("/getclass").post(getclass);
   
   module.exports = router;

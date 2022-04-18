@@ -8,5 +8,6 @@ router.post('/show',CourseController.show)
 router.post('/add',upload.single('idPhoto'),CourseController.add)
 router.post('/update',CourseController.update)
 router.post('/delete',CourseController.destroy)
+router.post('/getLessonsbyTeacher',CourseController.getLessonbyprof)
 
 module.exports = router

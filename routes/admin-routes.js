@@ -14,7 +14,8 @@ const {
     FetchStatReel,
     FetchStudent,
     FetchStudentInXClass,
-    banStudent
+    banStudent,
+    FetchTeachersocket
   } = require("../controllers/adminauth");
   
   const {
@@ -32,4 +33,5 @@ const {
   router.route("/fetchStudent").get(FetchStudent);
   router.route("/fetchStudentsInX").post(FetchStudentInXClass);
   router.route("/banStudent").post(banStudent);
+  router.route("/fetchteachersockett").get(FetchTeachersocket);
   module.exports = router;

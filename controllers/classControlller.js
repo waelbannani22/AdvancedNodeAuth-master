@@ -234,3 +234,28 @@ exports.assignStudentToClass = async (req, res, next) => {
       next(err);
     }
   };
+  exports.getclass= async (req, res, next) => {
+   
+    var {idClasse} = req.body;
+    var c = []
+    var k = []
+    console.log(idClasse)
+    try {
+      
+      const classe = await Classe.findOne({
+        _id:idClasse
+      });
+        
+     
+       
+        res.status(200).json({
+          success: true,
+          data: classe.className,
+        });
+      
+      
+    } catch (err) {
+      console.log("failure")
+      next(err);
+    }
+  };

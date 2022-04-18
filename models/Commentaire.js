@@ -2,11 +2,16 @@ const mongoose = require("mongoose");
 
 const CommantaireSchema = new mongoose.Schema(
     {
-        commantaire: { type: String },      
-user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-}
+        commantaire: { type: String },
+        user: {
+            type: String
+        },
+        lesson : {
+            type : String
+        },
+        created:{
+            type : String
+        }
     },
     {
         timestamps: { currentTime: () => Date.now() },

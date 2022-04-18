@@ -8,5 +8,6 @@ router.post('/show',commantaire.show)
 router.post('/add',upload.single('commantaire'),commantaire.add)
 router.post('/update',commantaire.update)
 router.post('/delete',commantaire.destroy)
+router.post('/findbylesson',commantaire.findbyLessons)
 
 module.exports = router
