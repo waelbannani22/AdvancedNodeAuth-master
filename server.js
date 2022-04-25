@@ -38,8 +38,7 @@ var dataTT;
 var stdinval;
 var  pathdir;
 var pathdirh;
-var name="feferfer";
-console.log("username====",name)
+var name="driss"
 mongoose.connect('mongodb+srv://allin:123@allin.wfzye.mongodb.net/allin?retryWrites=true&w=majority',
   {
     useNewUrlParser: true,
