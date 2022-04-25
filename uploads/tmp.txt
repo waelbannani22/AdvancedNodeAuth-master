@@ -1,3 +1,4 @@
-Class1
 stdin
 MyClass
+test5
+testp

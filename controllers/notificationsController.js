@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json())
 
 exports.createNotification = async (req, res, next) => {
-    const {title,description,createdAt,type,user} = req.body;
+    const {title,description,type,user,users,createdAt,motif} = req.body;
     try {
      
       const noti = await  notifications.create({
@@ -15,7 +15,9 @@ exports.createNotification = async (req, res, next) => {
         createdAt:createdAt,
         type:type,
         isUnRead : true,
-        user:user
+      
+        users:users,
+        motif:motif
         
       });
       console.log("success")
@@ -33,8 +35,8 @@ exports.createNotification = async (req, res, next) => {
     try {
      
       const noti = await  notifications.find({
-           user:user
-      });
+          users : {$in:user}
+      }).sort({"updatedAt":-1});
      if ( noti){
         res.status(200).json({
             success: true,

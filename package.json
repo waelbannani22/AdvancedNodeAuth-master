@@ -25,6 +25,7 @@
     "mongoose": "^5.11.9",
     "multer": "^1.4.4",
     "nodemailer": "^6.4.17",
+    "react-toastify": "^8.2.0",
     "reactstrap": "^9.0.1",
     "recharts": "^2.1.9",
     "request": "^2.88.2",

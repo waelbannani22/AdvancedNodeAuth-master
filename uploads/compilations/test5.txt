@@ -1,1 +1,1 @@
-Sum of x+y = 35
+Sum of xt+y = 35

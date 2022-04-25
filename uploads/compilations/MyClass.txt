@@ -1,12 +1,1 @@
-
-MyClass.java:3: error: cannot find symbol
-Class1 c = new Class1();
-^
-  symbol:   class Class1
-  location: class MyClass
-MyClass.java:3: error: cannot find symbol
-Class1 c = new Class1();
-               ^
-  symbol:   class Class1
-  location: class MyClass
-2 errors
+No "public class" found to execute

@@ -1,5 +1,2 @@
-
-MyClass.java:21: error: reached end of file while parsing
-llll
-^
-1 error
+Type a Line and enter....
+Type something in the Stdin box above....

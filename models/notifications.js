@@ -21,10 +21,22 @@ const NotificationSchema = new mongoose.Schema({
     type: String,
    
   },
+  motif: {
+    type: String,
+   
+  },
   user: {
     type: String,
    
   },
-});
+  
+  users: {
+    type: Array,
+   
+  }},
+  {
+      timestamps: { currentTime: () => Date.now() },
+  }
+);
 
 module.exports = mongoose.model("Notifications", NotificationSchema);
