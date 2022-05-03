@@ -51,7 +51,7 @@ exports.assignStudentToClass = async (req, res, next) => {
         console.log(student[i]._id)
         const us =  await User.find({_id : student[i]._id})
         console.log(us)
-        User.findOneAndUpdate({_id :student[i]._id}, {status : "affected"}).exec();
+        User.findOneAndUpdate({_id :student[i]._id}, {status : "affected",claaseName:clas.className}).exec();
         await clas.save();
         i++
         console.log("success")

@@ -24,6 +24,8 @@ const courRoute = require('./routes/courRoute')
 const resourceRoute = require('./routes/ressourceRoute')
 const commantaireRoute = require('./routes/commentaire')
 const workRoute = require('./routes/work')
+const exerciceRoute = require('./routes/exercice')
+const admin = require('firebase-admin');
 let server = require('http').Server(app);
 const io = require("socket.io")(server, {
 
@@ -71,7 +73,17 @@ io2.on('connection', socket => {
   })
 });
 
-
+//fcm
+const firebaseConfig = {
+  apiKey: "AIzaSyD5aD0XvP6lWzD5suVLO54m05RaSngJtLM",
+  authDomain: "allinone-345122.firebaseapp.com",
+  projectId: "allinone-345122",
+  storageBucket: "allinone-345122.appspot.com",
+  messagingSenderId: "790224334277",
+  appId: "1:790224334277:web:ef6e2aefe80bb2e8246fac",
+  measurementId: "G-DQCKNX8BE6"
+};
+admin.initializeApp(firebaseConfig)
 
 app.get("/", (req, res) => {
   const dirPath = base64.decode(req.query.path) || "";
@@ -610,11 +622,14 @@ app.use('/api/images', require('./routes/images.route'));
 app.use('/admin/', require('./routes/admin-routes'));
 app.use('/admin/class', require('./routes/class-routes'));
 app.use('/api/notifications/', require('./routes/notifications-route'));
+app.use('/api/fcm/', require('./routes/fcm-route'));
+// app.use('/api/exercice/', require('./routes/'));
 
 app.use('/api/cour', courRoute)
 app.use('/api/resource', resourceRoute)
 app.use('/api/commantaire', commantaireRoute)
 app.use('/api/work', workRoute)
+app.use('/api/exercice',exerciceRoute )
 
 
 app.use(fileupload());

@@ -1,4 +1,1 @@
-stdin
 MyClass
-test5
-testp
