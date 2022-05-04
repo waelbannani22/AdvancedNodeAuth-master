@@ -1,4 +1,3 @@
-
 const Exercice = require('../models/Exercice')
 const index = (req, res, next) => {
     Exercice.find()
