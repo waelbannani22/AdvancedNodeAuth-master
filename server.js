@@ -8,6 +8,7 @@ const errorHandler = require("./middleware/error");
 var cors = require('cors')
 const bodyParser = require("body-parser");
 const base64 = require("base-64");
+const User = require("./models/User");
 const request = require('request');
 const fs = require("fs");
 const fsx = require("fs-extra");
@@ -39,8 +40,11 @@ var dataT;
 var dataTT;
 var stdinval;
 var  pathdir;
-var pathdirh;
-var name="driss"
+var t=[]
+var ts=[]
+var dataStudent
+var dataTeacher
+var name;
 mongoose.connect('mongodb+srv://allin:123@allin.wfzye.mongodb.net/allin?retryWrites=true&w=majority',
   {
     useNewUrlParser: true,
@@ -71,7 +75,68 @@ io2.on('connection', socket => {
   socket.on("send-message", newValue => {
     socket.broadcast.emit("receive-message", newValue)
   })
+  socket.on('forceDisconnect', function(){
+    socket.disconnect();
 });
+
+});
+//drive
+const {google} = require('googleapis');
+const CLIENT_ID ='239954449446-7gnh1uasjujgk6ost1e2ctqp7ig7mtqk.apps.googleusercontent.com'
+const CLIENT_SECRET='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';
+const REDIRECT_URI='https://developers.google.com/oauthplayground'
+const REFRESH_TOKEN ='1//04sJKuEw3d4iQCgYIARAAGAQSNwF-L9IrTnSyPzkedHcuB_5F8sqiTI2W-9Mxw-PjFe-lrP1SuEy0mkUi8StN0GSv2mI7rYcon1Y'
+const oauth2Client = new google.auth.OAuth2(
+CLIENT_ID,
+CLIENT_SECRET,
+REDIRECT_URI
+
+);
+oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
+const drive = google.drive({
+  version:'v3',
+  auth:oauth2Client
+})
+var filePath = ''
+var filro=''
+async function uploadFile()
+{
+  try
+  {
+const response = await drive.files.create({
+  requestBody:{
+    name:filro,
+    mimeTypes:'any_mime_type'
+  },
+  media: {
+    mimeTypes:'any_mime_type',
+    body : fs.createReadStream(filePath)
+  }
+})
+console.log(response.data)
+  }
+  catch(error)
+  {
+    console.log(error.message)
+  }
+}
+
+
+app.post("/pap",(req,res)=>
+{
+  var log = req.body;
+  var log2 = req.body;
+  filePath=log.data
+  filro=log2.data2
+  console.log("path",filePath)
+  console.log("filro",filro)
+  uploadFile()
+  res.json({
+  message :"done" 
+  })
+})
+
+
 
 //fcm
 const firebaseConfig = {
@@ -241,7 +306,7 @@ app.post("/stdin", (req, res) => {
 app.post("/getname", (req, res) => {
   var log = req.body;
   name = log.data
-  console.log(name)
+  console.log("nn",name)
   res.json({
     message: "done"
   })
@@ -257,6 +322,7 @@ app.get("/folder", (req, res) => {
   var datacomp = ""
   var languageC;
   var y = "";
+  console.log("tyui",name)
   const directoryPath = "C:/Users/leowa/Downloads/Compressed/AdvancedNodeAuth-master/AdvancedNodeAuth-master/uploads/work/" + name;
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
@@ -289,8 +355,8 @@ app.get("/folder", (req, res) => {
         var data = JSON.stringify({
           "script": data,
           "language": y,
-          "clientId": "94c401bedab266b2b963465707a543d6",
-          "clientSecret": "26dd5c86467ff7a6feb3e8a27ff824a22ad0836c36e3ef0ef599f8471cb6718c",
+          "clientId": "f4b6044724f3c3c7cadd85f0f75309fd",
+          "clientSecret": "777f1da696b00a21537e0d90c387a183b74b684e22ee841566a53658aa86521c",
           "stdin": stdinval
         });
 
@@ -528,17 +594,32 @@ app.get("/statusS", (req, res) => {
   })
 })
 
-app.get("/listaw", (req, res) => {
-  var t = []
-  var x = "false"
-  var name = "student"
+app.post("/checkstudent",(req,res)=>{
 
-  t.push("student")
-  if (t.indexOf("student") > -1) {
-    x = "true"
+  var x = false
+  var name=req.body
+  var usery=name.data
+
+  if(ts.indexOf(usery)>-1)
+  {
+x="true"
+
   }
+  console.log("ts:",ts)
+res.json({
+  x
+})
+})
+
+app.post("/listaw", (req, res) => {
+  ts=[]
+  var l = req.body
+var y = l.data
+
+
+  ts.push(y)
   res.json({
-    x
+    message:"done"
   })
 })
 
@@ -560,20 +641,35 @@ app.get("/statusST", (req, res) => {
   })
 })
 
-app.get("/listawT", (req, res) => {
-  var t = []
-  var x = "false"
-  var name = "student"
+app.post("/checkteacher",(req,res)=>{
 
-  t.push("student")
-  if (t.indexOf("student") > -1) {
-    x = "true"
+  var x = false
+  var name=req.body
+  var usery=name.data
+
+  if(t.indexOf(usery)>-1)
+  {
+x="true"
+
   }
-  res.json({
-    x
-  })
+  console.log("t:",t)
+res.json({
+  x
 })
+})
+app.post("/listawT",(req,res)=>{
+  
+   t=[]
+  var l = req.body
+var y = l.data
 
+
+  t.push(y)
+  res.json({
+    message:"done"
+  })
+
+})
 app.get("/pathy",(req,res)=>{
   const fs = require('fs')
 
@@ -604,7 +700,93 @@ app.post("/readsingle",(req,res)=>{
 res.json({
 fileContent})
 })
+app.get("/getteach",async(req,res,next)=>
+{
+  var k = []
+  var r = []
 
+  try {
+
+    const teachers = await User.find({
+
+      role: "teacher",
+      online: true
+      
+    });
+    console.log(teachers)
+    teachers.forEach(async el=>{
+      k.push([el.firstname+" "+el.lastname])
+      r.push([el._id])
+
+    })
+    res.status(200).json({
+      success: true,
+      data: k,
+      ii : r
+
+    });
+  } catch (err) {
+    console.log("failure")
+    next(err);
+  }
+})
+app.get("/getstud",async(req,res,next)=>
+{
+  var k = []
+  var r = []
+  try {
+
+    const teachers = await User.find({
+
+      role: "student",
+      online : true
+      
+    });
+    console.log(teachers)
+    teachers.forEach(async el=>{
+      k.push([el.firstname+" "+el.lastname])
+      r.push([el._id])
+      
+    })
+    res.status(200).json({
+      success: true,
+      data: k,
+      ii : r
+    });
+  } catch (err) {
+    console.log("failure")
+    next(err);
+  }
+})
+app.post("/socketteacher", (req, res) => {
+  var x = req.body
+  dataTeacher = x.data;
+  console.log("dataTeacher", dataTeacher)
+  res.json({
+    dataTeacher
+  })
+})
+app.post("/socketstudent", (req, res) => {
+  var x = req.body
+  dataStudent = x.data;
+  console.log("dataStudent", dataStudent)
+  res.json({
+    dataStudent
+  })
+})
+app.get("/getsocketteacher", (req, res) => {
+
+ 
+  res.json({
+    dataTeacher
+  })
+})
+app.get("/getsocketstudent", (req, res) => {
+
+  res.json({
+    dataStudent
+  })
+})
 
 
 

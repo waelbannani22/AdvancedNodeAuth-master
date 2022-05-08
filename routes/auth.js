@@ -20,13 +20,18 @@ const {
   verifGoogle,
   registerGoogle,
   findbyEmail,
-  updateUser1
+  updateUser1,
+  isOfline,
+  isOnline
 } = require("../controllers/auth");
 //routes
 router.route("/register").post(register);
 
 router.route("/login").post(login);
 
+router.route("/isonline").post(isOnline);
+
+router.route("/isoffline").post(isOfline);
 router.route("/forgotpassword").post(forgotPassword);
 
 router.route("/passwordreset/:resetToken").put(resetPassword);

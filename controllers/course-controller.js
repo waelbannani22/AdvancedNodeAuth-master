@@ -104,7 +104,101 @@ const getLessonbyprof = async (req, res, next) => {
 
 
 }
+const getLessonbyStudent = async (req, res, next) => {
+    let classn = req.body.classn
+    let courseID = req.body.courseID
+    var b =true
+    try {
+        const lessons = await Course.find({
+          
+        })
+       // console.log("iii",lessons)
+        if ( lessons != ""){
+            var resz = lessons
+                var size = lessons.length
+                // for (i=0;i<size;i++){
+                //    // console.log("class",lessons[i].class)
+                //     if ( JSON.parse(lessons[i].class).classeName !=classn){
+                //             //      console.log("each",JSON.parse(e.class).classeName)
+                //             // console.log("class",classn)
+                            
+                                
+                //                 if ( lessons.indexOf(lessons[i])>-1){
+                //                          resz.splice(lessons.indexOf(lessons[i]), 1); // 2nd parameter means remove one item only
+                                            
+                //                         }
+                               
+                                  
+                //                   console.log("res",lessons) 
+                                 
+                //                 // console.log("res",o) 
+                //             }
+                // }
+               
+                lessons.forEach((e)=>{
+                    console.log("each",JSON.parse(e.class).classeName)
+                    console.log("class",classn)
+                    var size = lessons.length -1
+                   
+                    
+                    for(i=0;i<size;i++){
+                        console.log("class",lessons[i].class)
+                        console.log("i=",i,"size=",size)
+                        // if(size-i ==2){
+                        //     if ( JSON.parse(lessons[0].class).classeName !=classn){
+                        //         //      console.log("each",JSON.parse(e.class).classeName)
+                        //         // console.log("class",classn)
+                          
+                        //         lessons.splice(0, 1); // 2nd parameter means remove one item only
+                              
+                        //               console.log("res",lessons) 
+                                     
+                        //             // console.log("res",o) 
+                        //         } 
+                        // }
+                        // if(size-i >2)
+                        if ( JSON.parse(lessons[i].class).classeName !=classn){
+                    //      console.log("each",JSON.parse(e.class).classeName)
+                    // console.log("class",classn)
+                    
+                    lessons.splice(i, 1); // 2nd parameter means remove one item only
+                     
+                    size--
+                          console.log("res",lessons) 
+                         
+                        // console.log("res",o) 
+                    } 
+                    }
+                    
+              
+                })
+                console.log("las",lessons[lessons.length -1])
+                if ( JSON.parse(lessons[lessons.length -1].class).classeName !=classn ){
+                    lessons.splice(lessons.length -1, 1);
+                }
+                console.log("/////")
+               res.status(200).json({
+                success: true,
+                data: lessons,
+              });
+         
+          
+        }else{
+          //  console.log(lessons)
+            res.status(400).json({
+                success: false,
+                data: null,
+              });
+        }
+      
+    } catch (error) {
+        next(error)
+    }
+
+
+
+}
 
 module.exports = {
-    index, show, add, update, destroy,getLessonbyprof
+    index, show, add, update, destroy,getLessonbyprof,getLessonbyStudent
 }

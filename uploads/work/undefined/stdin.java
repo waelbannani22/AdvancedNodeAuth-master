@@ -11,14 +11,16 @@ public class MyClass {
 		System.out.println("You have typed...");
 		System.out.println(txt);
 		} catch (NoSuchElementException e) {
-		    System.out.println("Type something in the Stdin box ....");
+		    System.out.println("Type something in the Stdin box above....");
 		}
 		
 		
 	}
 
+
 	
 	
 	
 }
+
 

@@ -1,1 +1,4 @@
 MyClass
+testp
+test5
+stdin

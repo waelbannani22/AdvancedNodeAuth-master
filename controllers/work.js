@@ -40,24 +40,44 @@ const show = (req, res, next) => {
         })
     })
 }
+const findbystudentandhomework = async (req, res, next) => {
+    let idhomework = req.body.idhomework
+    let idstudent = req.body.idstudent
+    try {
+        const homeworks = await Work.find({
+            idcourse : idhomework,
+            idstudent:idstudent
+
+        }) ;
+        if (homeworks){
+             return res.status(200).json({success:true,data:homeworks})
+        }else{
+            return  res.status(403).json({success:false,data:null})
+        }
+    } catch (error) {
+        next(error)
+    }
+
+    
+}
 const add = (req, res, next) => {
              try {
-                  const { exercice , description  , date,pdfexercicename } = req.body;
-            
+                  const { exercice , idstudent  , idhomework,pdfexercicename } = req.body;
+                  console.log( req.file.path)
             const newWork = new Work();
            
             newWork.exercice = exercice;
-            newWork.description = description;
+            newWork.idstudent = idstudent;
           
-            newWork.date = date;
+            newWork.idcourse = idhomework;
             
-            newWork.pdfexercicename = pdfexercicename;
-            
+            newWork.rendu =  req.file.path;
+            console.log(newWork)
             newWork.save();
             console.log(newWork)
             res.status(201).send({ success: "success", work: newWork });
              } catch (error) {
-                res.status(400).send({ success: false, work: "error" });
+                res.status(404).send({ success: false, work: "error" });
              }
            
           
@@ -104,5 +124,5 @@ const destroy =(req, res, next) =>{
 }
 
 module.exports = {
-    index, show, add, update, destroy,fileup
+    index, show, add, update, destroy,fileup,findbystudentandhomework
 }

@@ -4,13 +4,13 @@ var Workschema = new mongoose.Schema({
         exercice: {
                 type: String
         },
-        description: {
+        idstudent: {
             type: String
         },
-        date: {
+        idcourse: {
             type: String
         },
-        pdfexercicename: {
+        rendu: {
                 type: String
         }
 

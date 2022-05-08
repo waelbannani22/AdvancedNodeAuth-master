@@ -392,3 +392,59 @@ console.log(id)
     next(error);
   }
 }
+exports.isOnline = async (req, res, next) => {
+  const { id } = req.body;
+console.log(id)
+  try {
+    const user = await User.findOne({_id:id});
+
+    //no user 
+    console.log(user)
+    if (!user) {
+      return next(new ErrorResponse("no user found", 401));
+    }
+    //user exists
+    user.online = true;
+   
+    
+    
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      
+      message: "user online"
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+exports.isOfline = async (req, res, next) => {
+  const { id } = req.body;
+console.log(id)
+  try {
+    const user = await User.findOne({_id:id});
+
+    //no user 
+    console.log(user)
+    if (!user) {
+      return next(new ErrorResponse("no user found", 401));
+    }
+    //user exists
+    user.online = false;
+   
+    
+    
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      
+      message: "user offline"
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
