@@ -9,4 +9,7 @@ router.post('/add',upload.single('pdfexercicename'),exercice.add)
 router.post('/update',exercice.update)
 router.post('/delete',exercice.destroy)
 router.post('/findbycourse',exercice.findbycourse)
+router.post('/addreport',exercice.addreport)
+router.post('/allreports',exercice.findallreport)
+
 module.exports = router

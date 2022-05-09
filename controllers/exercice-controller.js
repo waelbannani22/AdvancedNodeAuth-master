@@ -1,4 +1,5 @@
 const Exercice = require('../models/Exercice')
+const Report = require('../models/report')
 const index = (req, res, next) => {
     Exercice.find()
     .then(response => {
@@ -119,7 +120,48 @@ const destroy =(req, res, next) =>{
         })
     })
 }
+const addreport = (req, res, next) => {
+    try {
+         const { motif , emailStudent  , idteacher,classe } = req.body;
+       
+   const newWork = new Report();
+  
+   newWork.idteacher = idteacher;
+   newWork.emailS = emailStudent;
+ 
+   newWork.motif = motif;
+   
+   newWork.class =  classe;
+   
+   newWork.save();
+    console.log(newWork)
+   res.status(201).send({ success: "success", work: newWork });
+    } catch (error) {
+       res.status(404).send({ success: false, work: "error" });
+    }
+  
+ 
+
+    
+}
+const findallreport = async (req, res, next) => {
+    
+    try {
+        const homeworks = await Report.find({
+         
+        }) ;
+        if (homeworks){
+             return res.status(200).json({success:true,data:homeworks})
+        }else{
+            return  res.status(403).json({success:false,data:null})
+        }
+    } catch (error) {
+        next(error)
+    }
+
+    
+}
 
 module.exports = {
-    index, show, add, update, destroy,fileup,findbycourse
+    index, show, add, update, destroy,fileup,findbycourse,addreport,findallreport
 }
